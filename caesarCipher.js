@@ -1,37 +1,27 @@
-//Takes two parameters: inputString (the phrase to encrypt) and shift (the number of positions to shift each letter).
 function caesarCipherEncrypt(inputString, shift) {
-  //Handle shifts greater than 26 or less than -26 by using modulo 26
-  //Handles wrapping around the alphabet using modulo operations (% 26).
-  shift = shift % 26;
-
-  //Convert the inputString to lowercase for case insensitivity
+  if (shift > 26) {
+    console.error("The shift value must be between -26 and 26.");
+  }
   inputString = inputString.toLowerCase();
-
   let encryptedString = "";
-
-  //Loop through each character in the input string
   for (let i = 0; i < inputString.length; i++) {
     let char = inputString[i];
-
-    //If the character is a letter (a-z), it calculates its new position in the alphabet by adding shift to its ASCII code.
     if (char.match(/[a-z]/)) {
-      let code = inputString.charCodeAt(i);
+      let asciiCodeNo = inputString.charCodeAt(i);
+      //It returns a number between 0 and 65535.
+      asciiCodeNo = asciiCodeNo + shift;
 
-      //Shift the character by the specified number
-      // Handle wrapping around the alphabet
-      code = code + shift;
-
-      // Adjust the code if it goes out of bounds of 'a' to 'z'
-      if (code < 97) {
-        code = code + 26;
-      } else if (code > 122) {
-        code = code - 26;
+      if (asciiCodeNo < 97) {
+        //A=65 a=97
+        asciiCodeNo = asciiCodeNo + 26;
+      } else if (asciiCodeNo > 122) {
+        //Z=90 z=122
+        asciiCodeNo = asciiCodeNo - 26;
       }
 
-      // Append the encrypted character to the encryptedString
-      encryptedString += String.fromCharCode(code);
+      encryptedString += String.fromCharCode(asciiCodeNo);
     } else {
-      // If it's not a letter, just append it unchanged
+      //If it's not a letter, just append it unchanged
       encryptedString += char;
     }
   }
@@ -39,24 +29,20 @@ function caesarCipherEncrypt(inputString, shift) {
   return encryptedString;
 }
 
-// Main program to read command line arguments and encrypt the input phrase
 function main() {
-  // Read arguments from command line
-  let args = process.argv.slice(2);
-  if (args.length !== 2) {
-    console.error('Usage: node caesarCipher.js "phrase" shift');
+  let inputString = process.argv[2];
+  let shift = process.argv[3];
+  shift = parseInt(shift, 10);
+  //If either argument is missing
+  if (!inputString || !shift) {
+    console.error(
+      "The program takes two parameters: 1-The phrase to encrypt and 2-The number of positions to shift each letter."
+    );
     process.exit(1);
   }
 
-  let inputString = args[0];
-  let shift = parseInt(args[1], 10);
-
-  // Encrypt the inputString with the specified shift
   let encryptedString = caesarCipherEncrypt(inputString, shift);
-
-  // Output the encrypted string
   console.log(encryptedString);
 }
 
-// Run the main program
 main();
